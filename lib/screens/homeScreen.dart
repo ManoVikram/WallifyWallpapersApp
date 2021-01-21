@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import './imageScreen.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -16,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Wallify"),
+        centerTitle: true,
       ),
       body: StreamBuilder(
         stream: wallpapers.snapshots(),
@@ -41,7 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 7.0,
               borderRadius: BorderRadius.circular(8.0),
               child: InkWell(
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (contxt) => ImageScreen(),
+                    settings: RouteSettings(
+                      arguments: snapshot.data.docs[index]["url"],
+                    ),
+                  ),
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: Hero(
