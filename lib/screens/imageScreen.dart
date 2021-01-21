@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
+import 'package:flutter/services.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:image_downloader/image_downloader.dart';
 
 import '../ad_manager.dart';
 
@@ -41,14 +38,29 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   void downloadImage(String imageURL) async {
-    final response = await http.get(imageURL);
+    /* final response = await http.get(imageURL);
     final directory = await getApplicationDocumentsDirectory();
 
     File file = File(
       path.join(directory.path, imageURL + ".jpg"),
     );
 
-    file.writeAsBytesSync(response.bodyBytes);
+    file.writeAsBytesSync(response.bodyBytes); */
+
+    try {
+      var imageId = await ImageDownloader.downloadImage(imageURL);
+
+      if (imageId == null) {
+        return;
+      }
+
+      var fileName = await ImageDownloader.findName(imageId);
+      var path = await ImageDownloader.findPath(imageId);
+      var size = await ImageDownloader.findByteSize(imageId);
+      var mimeType = await ImageDownloader.findMimeType(imageId);
+    } on PlatformException catch (error) {
+      print(error);
+    }
   }
 
   @override
