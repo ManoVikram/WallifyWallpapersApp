@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import './screens/homeScreen.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -6,7 +9,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Wallpapers App",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.indigo,
+        accentColor: Colors.orangeAccent,
+      ),
       home: Wallpapers(),
     );
   }
@@ -18,10 +24,34 @@ class Wallpapers extends StatefulWidget {
 }
 
 class _WallpapersState extends State<Wallpapers> {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return FutureBuilder(
+      future: _initialization,
+      builder: (contxt, futureSnapshot) {
+        if (futureSnapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text("ERROR: Try again later."),
+            ),
+          );
+        }
+
+        if (futureSnapshot.connectionState == ConnectionState.done) {
+          return HomeScreen();
+        }
+
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
