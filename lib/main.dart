@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
+import './ad_manager.dart';
 import './screens/homeScreen.dart';
 
 class MyApp extends StatelessWidget {
@@ -53,5 +55,6 @@ class _WallpapersState extends State<Wallpapers> {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  FirebaseAdMob.instance.initialize(appId: AdManager.appId);
   runApp(MyApp());
 }

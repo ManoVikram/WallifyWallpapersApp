@@ -4,16 +4,48 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:firebase_admob/firebase_admob.dart';
 
-class ImageScreen extends StatelessWidget {
+import '../ad_manager.dart';
+
+class ImageScreen extends StatefulWidget {
+  @override
+  _ImageScreenState createState() => _ImageScreenState();
+}
+
+class _ImageScreenState extends State<ImageScreen> {
   final String routeName = "/image";
+
+  BannerAd _bannerAd;
+
+  @override
+  void initState() {
+    super.initState();
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      size: AdSize.banner,
+    );
+    _loadBannerAd();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd
+      ..load()
+      ..show(anchorType: AnchorType.top);
+  }
 
   void downloadImage(String imageURL) async {
     final response = await http.get(imageURL);
     final directory = await getApplicationDocumentsDirectory();
 
     File file = File(
-      path.join(directory.path, imageURL),
+      path.join(directory.path, imageURL + ".jpg"),
     );
 
     file.writeAsBytesSync(response.bodyBytes);
@@ -62,7 +94,9 @@ class ImageScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: RaisedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      downloadImage(imageURL);
+                    },
                     padding:
                         EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                     shape: RoundedRectangleBorder(
